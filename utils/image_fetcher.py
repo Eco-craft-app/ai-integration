@@ -18,6 +18,6 @@ async def fetch_image(url):
                 # Encode to base64
                 image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
-                return image_base64
+                return str(image_base64)
             else:
                 print(f"Error: {response.status}")

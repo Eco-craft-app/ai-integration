@@ -12,6 +12,7 @@ from prompts.recycling_guidance2 import RecyclingGuide2
 
 from utils.image_fetcher import fetch_image
 from utils.logging_config import log_execution, logger
+from fastapi.middleware.cors import CORSMiddleware
 
 api_key = os.getenv("GEMINI_API_KEY", "")
 
@@ -22,7 +23,15 @@ waste_detection = WasteDetection(api_key)
 recycling_guide2 = RecyclingGuide2(api_key)
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, PUT, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
+bins = {"Plastik i metal":"https://ibb.co/DMJfh4B","Papier":"https://ibb.co/QCbMtr6","Szkło":"https://ibb.co/M6TxrW7","Odpady organiczne":"https://ibb.co/3pFTj3F","Odpady zmieszane":"https://ibb.co/34LtphV","Odpady wielkogabarytowe":"https://ibb.co/5sxCVD2","brak":"https://ibb.co/5KK2w0x"}
 
 class MessageModel(BaseModel):
     Message: str
@@ -72,7 +81,24 @@ async def recycling_photo_endpoint(data: PhotoModel):
     image = await fetch_image(data.Photo_URL)
     response = await recycling_guide2.generate_response(image)
     cleaned = response.split("```json\n")[1].split("```")[0].replace("'", '"')
-    return {"response": json.loads(cleaned)}
+    gemini_response = json.loads(cleaned)
+    for item in gemini_response:
+        item['bin'] = bins.get(item['bin'], bins["brak"])
+    grouped_by_bin = {}
+
+    for item in gemini_response:
+        bin_url = item["bin"]
+        item_info = {
+            "item": item["item"],
+            "explanation": item["explanation"]
+        }
+        
+        if bin_url not in grouped_by_bin:
+            grouped_by_bin[bin_url] = []
+        
+        grouped_by_bin[bin_url].append(item_info)
+    return {"response": gemini_response, "bins": grouped_by_bin}
+
 
 
 @log_execution
@@ -80,9 +106,26 @@ async def recycling_photo_endpoint(data: PhotoModel):
 async def recycling_photo_endpoint_2(data: PhotoModel):
     photo = await fetch_image(data.Photo_URL)
     described_photo = await waste_detection.generate_response(photo)
-    response = await recycling_guide.generate_response(described_photo)
+    response = await recycling_guide.generate_response()
+    
     cleaned = response.split("```json\n")[1].split("```")[0]
-    return {"response": json.loads(cleaned)}
+    gemini_response = json.loads(cleaned)
+    for item in gemini_response:
+        item['bin'] = bins.get(item['bin'])
+    grouped_by_bin = {}
+
+    for item in data:
+        bin_url = item["bin"]
+        item_info = {
+            "item": item["item"],
+            "explanation": item["explanation"]
+        }
+        
+        if bin_url not in grouped_by_bin:
+            grouped_by_bin[bin_url] = []
+        
+        grouped_by_bin[bin_url].append(item_info)
+    return {"response": gemini_response, "bins": grouped_by_bin}
 
 
 @log_execution
@@ -90,7 +133,8 @@ async def recycling_photo_endpoint_2(data: PhotoModel):
 async def upcycling_endpoint(data: UpcyclingTextModel):
     json_string = json.dumps(data.Message, ensure_ascii=False, indent=4)
     response = await upcycling_ideas.generate_response(json_string)
-    return {"response": json.loads(response)}
+    cleaned = response.split("```json\n")[1].split("```")[0].replace("'", '"')
+    return {"response": json.loads(cleaned)}
 
 
 @log_execution
@@ -102,11 +146,11 @@ async def upcycling_photo_endpoint(data: PhotoModel):
     data = [{"item": entry["item"], "details": entry["details"]} for entry in json.loads(cleaned)]
     json_string = json.dumps(data, ensure_ascii=False, indent=4)
     response = await upcycling_ideas.generate_response(json_string)
-    cleaned_response = response.split("```json\n")[0].split("```")[0]
-    return {"response": json.loads(cleaned_response)}
+    cleaned = response.split("```json\n")[1].split("```")[0].replace("'", '"')
+    return {"response": json.loads(cleaned)}
 
 
 # To run the FastAPI server
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host='0.0.0.0', port=1234)
+    uvicorn.run(app, host='0.0.0.0', port=2024)

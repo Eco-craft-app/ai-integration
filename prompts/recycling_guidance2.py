@@ -45,8 +45,19 @@ class RecyclingGuide2(BasePrompt):
                     "size": "średnie",
                     "variety": "jednakowe"
                 }
+            },
+            {
+            "item": "Niezidentyfikowany przedmiot",
+            "bin": "brak",
+            "explanation": "Przedmiot jest zbyt niewyraźny, aby określić materiał i przeznaczenie.",
+            "details": {
+                "material": "Nieokreślony",
+                "size": "Nieokreślony",
+                "variety": "Nieokreślony"
             }
+        }
         ]
+        Otrzymasz zdjęcie w formacie webp
 """
     def __init__(self, api_key: str, model: str = "gemini-1.5-flash") -> None:
         super().__init__(api_key, model, self.PROMPT)
@@ -54,7 +65,7 @@ class RecyclingGuide2(BasePrompt):
     @log_execution
     async def generate_response(self, user_input) -> Optional[str]:
         if self.api_client and self.api_client.model_instance:
-            response = await self.api_client.model_instance.generate_content_async([
+            response = await self.api_client.model_instance.generate_content_async([{"text":"."},
                 {
                                 "mime_type": "image/webp",
                                 "data": user_input
