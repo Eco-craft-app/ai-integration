@@ -27,7 +27,7 @@ Aby uruchomić moduł, upewnij się, że spełniasz poniższe wymagania:
 - uvicorn
   
 
-## Endpointy i ich funkcje
+## 🚀 Endpointy i ich funkcje
 ### 1. Czat z ekspertem (/expert)
 - Umożliwia interakcję z wirtualnym ekspertem ds. zarządzania odpadami i ekologii.  
 - *Status*: Nie jest wykorzystywany w aplikacji Eco-craft.
