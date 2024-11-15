@@ -71,8 +71,19 @@ Aby uruchomić moduł, upewnij się, że spełniasz poniższe wymagania:
             "explanation": "Wrzuć do pojemnika na plastik i metal.",
             "item": "plastikowa butelka"
         }
-    ]
-}
+    ],
+    "bins" :[
+"https://ibb.co/QCbMtr6": [
+            {
+                "item": "karton",
+                "explanation": "Wrzuć do pojemnika na papier."
+            },
+            {
+                "item": "kartonowe pudełko",
+                "explanation": "Wrzuć do pojemnika na papier."
+            }
+        ]
+}]
 ```
 ### 4. Alternatywna analiza zdjęcia (/recycling_photo_2)
 - Działa podobnie do /recycling_photo, ale wykorzystuje model z endpointu /detect do wykrywania odpadów, co jest mniej efektywne.
