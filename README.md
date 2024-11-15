@@ -171,7 +171,8 @@ Jeśli napotkasz jakiekolwiek problemy lub masz pytania dotyczące projektu, sko
 ## Licencja
 Projekt jest dostępny na licencji MIT License. Szczegółowe informacje znajdują się w pliku [LICENSE](LICENCE).
 
-## Dziękujemy za zainteresowanie naszym projektem! Mamy nadzieję, że pomoże on w zrównoważonym zarządzaniu odpadami i rozwoju kreatywnych projektów upcyclingowych.
+---
+Dziękujemy za zainteresowanie naszym projektem! Mamy nadzieję, że pomoże on w zrównoważonym zarządzaniu odpadami i rozwoju kreatywnych projektów upcyclingowych.
 
 
 ![Eco-craft Footer](https://github.com/Eco-craft-app/.github/blob/main/profile/leaves_footer.png)
